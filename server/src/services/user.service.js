@@ -19,17 +19,25 @@ class UserService {
     if (data.name) user.name = data.name;
     if (data.notificationPreferences) user.notificationPreferences = { ...user.notificationPreferences, ...data.notificationPreferences };
 
+    let avatarWarning = null;
     if (file) {
-      if (user.avatarPublicId) {
-        try { await cloudinary.uploader.destroy(user.avatarPublicId); } catch {}
+      try {
+        if (user.avatarPublicId) {
+          try { await cloudinary.uploader.destroy(user.avatarPublicId); } catch {}
+        }
+        const result = await uploadToCloudinary(file.buffer, 'avatars', { transformation: [{ width: 200, height: 200, crop: 'fill', gravity: 'face' }] });
+        user.avatar = result.secure_url;
+        user.avatarPublicId = result.public_id;
+      } catch (err) {
+        console.error('❌ Cloudinary upload failed:', err.message || err);
+        avatarWarning = 'Avatar upload failed. Please check Cloudinary credentials.';
       }
-      const result = await uploadToCloudinary(file.buffer, 'avatars', { transformation: [{ width: 200, height: 200, crop: 'fill', gravity: 'face' }] });
-      user.avatar = result.secure_url;
-      user.avatarPublicId = result.public_id;
     }
 
     await user.save();
-    return user.toPublicJSON();
+    const profile = user.toPublicJSON();
+    if (avatarWarning) profile._warning = avatarWarning;
+    return profile;
   }
 
   async changePassword(userId, { currentPassword, newPassword }) {

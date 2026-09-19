@@ -304,21 +304,20 @@ export default function WhiteboardPanel({ height = 500 }) {
 
   const renderShape = (shape) => {
     const common = {
-      key: shape.id,
       id: shape.id,
       onClick: (e) => handleShapeClick(e, shape.id),
       draggable: tool === 'select',
       onDragEnd: (e) => handleShapeDragEnd(e, shape.id),
       onTransformEnd: (e) => handleShapeTransformEnd(e, shape.id),
     };
-    if (shape.type === 'line') return <Line {...common} points={shape.points} stroke={shape.stroke} strokeWidth={shape.strokeWidth} lineCap={shape.lineCap} lineJoin={shape.lineJoin} tension={shape.tension || 0} globalCompositeOperation={shape.isEraser ? 'destination-out' : 'source-over'} />;
-    if (shape.type === 'rect') return <Rect {...common} x={shape.x} y={shape.y} width={shape.width} height={shape.height} stroke={shape.stroke} strokeWidth={shape.strokeWidth} fill={shape.fill || 'transparent'} />;
-    if (shape.type === 'circle') return <Circle {...common} x={shape.x} y={shape.y} radius={shape.radius} stroke={shape.stroke} strokeWidth={shape.strokeWidth} fill={shape.fill || 'transparent'} />;
-    if (shape.type === 'straightLine') return <Line {...common} points={shape.points} stroke={shape.stroke} strokeWidth={shape.strokeWidth} lineCap="round" />;
-    if (shape.type === 'text') return <Text {...common} x={shape.x} y={shape.y} text={shape.text} fill={shape.fill} fontSize={shape.fontSize} fontFamily={shape.fontFamily} />;
+    if (shape.type === 'line') return <Line key={shape.id} {...common} points={shape.points} stroke={shape.stroke} strokeWidth={shape.strokeWidth} lineCap={shape.lineCap} lineJoin={shape.lineJoin} tension={shape.tension || 0} globalCompositeOperation={shape.isEraser ? 'destination-out' : 'source-over'} />;
+    if (shape.type === 'rect') return <Rect key={shape.id} {...common} x={shape.x} y={shape.y} width={shape.width} height={shape.height} stroke={shape.stroke} strokeWidth={shape.strokeWidth} fill={shape.fill || 'transparent'} />;
+    if (shape.type === 'circle') return <Circle key={shape.id} {...common} x={shape.x} y={shape.y} radius={shape.radius} stroke={shape.stroke} strokeWidth={shape.strokeWidth} fill={shape.fill || 'transparent'} />;
+    if (shape.type === 'straightLine') return <Line key={shape.id} {...common} points={shape.points} stroke={shape.stroke} strokeWidth={shape.strokeWidth} lineCap="round" />;
+    if (shape.type === 'text') return <Text key={shape.id} {...common} x={shape.x} y={shape.y} text={shape.text} fill={shape.fill} fontSize={shape.fontSize} fontFamily={shape.fontFamily} />;
     if (shape.type === 'sticky') {
       return (
-        <Group {...common} x={shape.x} y={shape.y}>
+        <Group key={shape.id} {...common} x={shape.x} y={shape.y}>
           <Rect width={shape.width || 150} height={shape.height || 150} fill={shape.fill} stroke={shape.stroke} strokeWidth={1} cornerRadius={4} shadowColor="black" shadowBlur={4} shadowOffset={{ x: 2, y: 2 }} shadowOpacity={0.15} />
           <Text width={shape.width || 150} height={shape.height || 150} text={shape.text} fill="#1e293b" align="center" verticalAlign="middle" padding={10} wrap="char" fontSize={16} fontFamily="Inter, sans-serif" />
         </Group>

@@ -150,15 +150,14 @@ export default function ReplayPage() {
   };
 
   const renderShape = (shape) => {
-    const common = { key: shape.id };
-    if (shape.type === 'line') return <Line {...common} points={shape.points} stroke={shape.stroke} strokeWidth={shape.strokeWidth} lineCap={shape.lineCap || 'round'} lineJoin={shape.lineJoin || 'round'} tension={shape.tension || 0} globalCompositeOperation={shape.isEraser ? 'destination-out' : 'source-over'} />;
-    if (shape.type === 'straightLine') return <Line {...common} points={shape.points} stroke={shape.stroke} strokeWidth={shape.strokeWidth} lineCap="round" />;
-    if (shape.type === 'rect') return <Rect {...common} x={shape.x} y={shape.y} width={shape.width} height={shape.height} stroke={shape.stroke} strokeWidth={shape.strokeWidth} fill={shape.fill || 'transparent'} />;
-    if (shape.type === 'circle') return <Circle {...common} x={shape.x} y={shape.y} radius={shape.radius} stroke={shape.stroke} strokeWidth={shape.strokeWidth} fill={shape.fill || 'transparent'} />;
-    if (shape.type === 'text') return <Text {...common} x={shape.x} y={shape.y} text={shape.text} fill={shape.fill} fontSize={shape.fontSize || 18} fontFamily={shape.fontFamily || 'Inter, sans-serif'} />;
+    if (shape.type === 'line') return <Line key={shape.id} points={shape.points} stroke={shape.stroke} strokeWidth={shape.strokeWidth} lineCap={shape.lineCap || 'round'} lineJoin={shape.lineJoin || 'round'} tension={shape.tension || 0} globalCompositeOperation={shape.isEraser ? 'destination-out' : 'source-over'} />;
+    if (shape.type === 'straightLine') return <Line key={shape.id} points={shape.points} stroke={shape.stroke} strokeWidth={shape.strokeWidth} lineCap="round" />;
+    if (shape.type === 'rect') return <Rect key={shape.id} x={shape.x} y={shape.y} width={shape.width} height={shape.height} stroke={shape.stroke} strokeWidth={shape.strokeWidth} fill={shape.fill || 'transparent'} />;
+    if (shape.type === 'circle') return <Circle key={shape.id} x={shape.x} y={shape.y} radius={shape.radius} stroke={shape.stroke} strokeWidth={shape.strokeWidth} fill={shape.fill || 'transparent'} />;
+    if (shape.type === 'text') return <Text key={shape.id} x={shape.x} y={shape.y} text={shape.text} fill={shape.fill} fontSize={shape.fontSize || 18} fontFamily={shape.fontFamily || 'Inter, sans-serif'} />;
     if (shape.type === 'sticky') {
       return (
-        <Group {...common} x={shape.x} y={shape.y}>
+        <Group key={shape.id} x={shape.x} y={shape.y}>
           <Rect width={150} height={150} fill={shape.fill} stroke={shape.stroke} strokeWidth={1} cornerRadius={4} shadowColor="black" shadowBlur={4} shadowOffset={{ x: 2, y: 2 }} shadowOpacity={0.15} />
           <Text width={150} height={150} text={shape.text} fill="#1e293b" align="center" verticalAlign="middle" padding={10} wrap="char" fontSize={16} fontFamily="Inter, sans-serif" />
         </Group>

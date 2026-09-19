@@ -174,6 +174,7 @@ function initializeSocket(server) {
         // Fetch recent chat history
         const recentMessages = await chatService.getMessages(
           roomId,
+          sessionId || null,
           socket.user.id,
           { limit: 50 },
         );
