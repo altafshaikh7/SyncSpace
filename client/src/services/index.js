@@ -5,97 +5,216 @@ export const authService = {
   login: (data) => api.post('/auth/login', data),
   logout: () => api.post('/auth/logout'),
   getMe: () => api.get('/auth/me'),
-  forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
+  forgotPassword: (email) =>
+    api.post('/auth/forgot-password', { email }),
   resetPassword: (token, data) =>
     api.post(`/auth/reset-password/${token}`, data),
-  verifyEmail: (token) => api.get(`/auth/verify-email/${token}`),
+  verifyEmail: (token) =>
+    api.get(`/auth/verify-email/${token}`),
 };
 
 export const userService = {
-  getProfile: () => api.get('/users/profile'),
+  getProfile: () =>
+    api.get('/users/profile'),
 
   updateProfile: (data) => {
     const form = new FormData();
 
     Object.entries(data).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
+      if (
+        value !== undefined &&
+        value !== null
+      ) {
         form.append(key, value);
       }
     });
 
-    return api.patch('/users/profile', form);
+    return api.patch(
+      '/users/profile',
+      form
+    );
   },
 
-  changePassword: (data) => api.patch('/users/change-password', data),
+  changePassword: (data) =>
+    api.patch(
+      '/users/change-password',
+      data
+    ),
 
   getActivityLog: (params) =>
-    api.get('/users/activity', { params }),
+    api.get('/users/activity', {
+      params,
+    }),
+
+  deleteActivityLog: (activityId) =>
+    api.delete(
+      `/users/activity/${activityId}`
+    ),
 
   searchUsers: (q) =>
-    api.get('/users/search', { params: { q } }),
+    api.get('/users/search', {
+      params: { q },
+    }),
 };
 
 export const roomService = {
-  create: (data) => api.post('/rooms', data),
-  getAll: (params) => api.get('/rooms', { params }),
-  getMy: () => api.get('/rooms/my'),
-  getById: (id) => api.get(`/rooms/${id}`),
-  getBySlug: (slug) => api.get(`/rooms/slug/${slug}`),
-  update: (id, data) => api.patch(`/rooms/${id}`, data),
-  delete: (id) => api.delete(`/rooms/${id}`),
-  invite: (id, data) => api.post(`/rooms/${id}/invite`, data),
-  acceptInvitation: (token) => api.get(`/rooms/invite/${token}`),
+  create: (data) =>
+    api.post('/rooms', data),
+
+  getAll: (params) =>
+    api.get('/rooms', { params }),
+
+  getMy: () =>
+    api.get('/rooms/my'),
+
+  getById: (id) =>
+    api.get(`/rooms/${id}`),
+
+  getBySlug: (slug) =>
+    api.get(`/rooms/slug/${slug}`),
+
+  update: (id, data) =>
+    api.patch(`/rooms/${id}`, data),
+
+  delete: (id) =>
+    api.delete(`/rooms/${id}`),
+
+  invite: (id, data) =>
+    api.post(`/rooms/${id}/invite`, data),
+
+  acceptInvitation: (token) =>
+    api.get(`/rooms/invite/${token}`),
+
   kickMember: (roomId, userId) =>
-    api.delete(`/rooms/${roomId}/members/${userId}`),
-  transferOwnership: (roomId, newOwnerId) =>
-    api.post(`/rooms/${roomId}/transfer`, { newOwnerId }),
-  createSession: (id) => api.post(`/rooms/${id}/sessions`),
-  endSession: (id, sessionId) =>
-    api.patch(`/rooms/${id}/sessions/${sessionId}/end`),
-  getSessions: (id) => api.get(`/rooms/${id}/sessions`),
-  startRecording: (id, sessionId) =>
-    api.post(`/rooms/${id}/sessions/${sessionId}/recording/start`),
-  saveRecording: (id, sessionId, formData) =>
+    api.delete(
+      `/rooms/${roomId}/members/${userId}`
+    ),
+
+  transferOwnership: (
+    roomId,
+    newOwnerId
+  ) =>
+    api.post(
+      `/rooms/${roomId}/transfer`,
+      { newOwnerId }
+    ),
+
+  createSession: (id) =>
+    api.post(`/rooms/${id}/sessions`),
+
+  endSession: (
+    id,
+    sessionId
+  ) =>
+    api.patch(
+      `/rooms/${id}/sessions/${sessionId}/end`
+    ),
+
+  getSessions: (id) =>
+    api.get(`/rooms/${id}/sessions`),
+
+  startRecording: (
+    id,
+    sessionId
+  ) =>
+    api.post(
+      `/rooms/${id}/sessions/${sessionId}/recording/start`
+    ),
+
+  saveRecording: (
+    id,
+    sessionId,
+    formData
+  ) =>
     api.post(
       `/rooms/${id}/sessions/${sessionId}/recording/save`,
       formData,
       {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          'Content-Type':
+            'multipart/form-data',
         },
       }
     ),
+
   getPendingInvitations: () =>
-    api.get('/rooms/invitations/pending'),
-  generateSessionSummary: (id, sessionId) =>
-    api.post(`/rooms/${id}/sessions/${sessionId}/summary`),
-  leave: (id) => api.post(`/rooms/${id}/leave`),
+    api.get(
+      '/rooms/invitations/pending'
+    ),
+
+  generateSessionSummary: (
+    id,
+    sessionId
+  ) =>
+    api.post(
+      `/rooms/${id}/sessions/${sessionId}/summary`
+    ),
+
+  leave: (id) =>
+    api.post(`/rooms/${id}/leave`),
 };
 
 export const chatService = {
   getMessages: (roomId, params) =>
-    api.get(`/chat/${roomId}/messages`, { params }),
-  deleteMessage: (id) => api.delete(`/chat/messages/${id}`),
-  markSeen: (roomId) => api.post(`/chat/${roomId}/seen`),
+    api.get(
+      `/chat/${roomId}/messages`,
+      { params }
+    ),
+
+  deleteMessage: (id) =>
+    api.delete(
+      `/chat/messages/${id}`
+    ),
+
+  markSeen: (roomId) =>
+    api.post(
+      `/chat/${roomId}/seen`
+    ),
+
   getUnreadCount: (roomId) =>
-    api.get(`/chat/${roomId}/unread`),
+    api.get(
+      `/chat/${roomId}/unread`
+    ),
 };
 
 export const replayService = {
-  getReplay: (roomId, sessionId) =>
-    api.get(`/replay/${roomId}/sessions/${sessionId}/replay`),
+  getReplay: (
+    roomId,
+    sessionId
+  ) =>
+    api.get(
+      `/replay/${roomId}/sessions/${sessionId}/replay`
+    ),
 
   getSnapshots: (roomId) =>
-    api.get(`/replay/${roomId}/snapshots`),
+    api.get(
+      `/replay/${roomId}/snapshots`
+    ),
 
-  generateSummary: (roomId, sessionId) =>
-    api.post(`/replay/${roomId}/sessions/${sessionId}/summary`),
+  generateSummary: (
+    roomId,
+    sessionId
+  ) =>
+    api.post(
+      `/replay/${roomId}/sessions/${sessionId}/summary`
+    ),
 
-  getAnalytics: (roomId, sessionId) =>
-    api.get(`/replay/${roomId}/sessions/${sessionId}/analytics`),
+  getAnalytics: (
+    roomId,
+    sessionId
+  ) =>
+    api.get(
+      `/replay/${roomId}/sessions/${sessionId}/analytics`
+    ),
 };
 
 export const executionService = {
-  executeCode: (language, code) =>
-    api.post('/execute', { language, code }),
+  executeCode: (
+    language,
+    code
+  ) =>
+    api.post('/execute', {
+      language,
+      code,
+    }),
 };
