@@ -1,5 +1,34 @@
+<div align="center">
 
 # SyncSpace
+
+### Real-Time Collaborative Workspace for Developers
+
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=white)](https://react.dev/)
+[![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-339933?style=for-the-badge&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Express.js](https://img.shields.io/badge/Express.js-4-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
+
+[![Socket.IO](https://img.shields.io/badge/Socket.IO-010101?style=for-the-badge&logo=socketdotio&logoColor=white)](https://socket.io/)
+[![Yjs](https://img.shields.io/badge/Yjs-FF6B35?style=for-the-badge)](https://yjs.dev/)
+[![WebRTC](https://img.shields.io/badge/WebRTC-F24E1E?style=for-the-badge&logo=webrtc&logoColor=white)](https://webrtc.org/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+
+[![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)](https://jwt.io/)
+[![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white)](https://cloudinary.com/)
+[![OpenAI](https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white)](https://openai.com/)
+[![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
+[![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)](https://render.com/)
+
+<br />
+
+[![Live Demo](https://img.shields.io/badge/Live_Demo-SyncSpace-00C853?style=for-the-badge)](https://sync-space-navy.vercel.app/)
+[![GitHub](https://img.shields.io/badge/GitHub-Repository-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/altafshaikh7/SyncSpace)
+[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
+
+</div>
 
 > **A real-time collaborative workspace for developers to code, communicate, and collaborate from a single platform.**
 
@@ -896,18 +925,4 @@ GitHub:
   Built with React, Node.js, MongoDB, Socket.IO, WebRTC, Yjs and modern web technologies.
 </p>
 ```
-
-## Is version mein kya important hai
-
-Ye README **resume-style project description nahi** hai. Company/recruiter GitHub README ke liye maine intentionally:
-
-* **Actual implemented features** rakhe hain.
-* Future features ko clearly **Roadmap** mein rakha hai.
-* Architecture diagram diya hai.
-* Installation aur deployment reproducible banaya hai.
-* Security section add kiya hai.
-* API structure documented hai.
-* AI features ko specifically explain kiya hai.
-* `FEATURE_IMPLEMENTATION.md` ke actual implementation details ko reflect kiya hai.
-* MIT License ko properly reference kiya hai.
 
