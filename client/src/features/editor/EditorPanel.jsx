@@ -20,7 +20,6 @@ const LANGUAGES = [
   { value: 'csharp', label: 'C#' },
   { value: 'php', label: 'PHP' },
   { value: 'html', label: 'HTML' },
-  { value: 'css', label: 'CSS' },
   { value: 'json', label: 'JSON' },
   { value: 'markdown', label: 'Markdown' },
   { value: 'rust', label: 'Rust' },
@@ -34,20 +33,19 @@ const EXT = {
 };
 
 const TEMPLATES = {
-  javascript: 'console.log("Hello World");\n',
+  javascript: 'console.log("Hello JavaScript");\n',
   typescript: 'console.log("Hello TypeScript");\n',
-  python: 'print("Hello World")\n',
-  java: 'class Main{\n  public static void main(String args[]){\n    System.out.println("Hello World");\n  }\n}\n',
-  cpp: '#include<bits/stdc++.h>\nusing namespace std;\n\nint main(){\n  cout << "Hello World";\n  return 0;\n}\n',
-  c: '#include <stdio.h>\n\nint main() {\n  printf("Hello World\\n");\n  return 0;\n}\n',
-  csharp: 'using System;\n\nclass Program {\n  static void Main() {\n    Console.WriteLine("Hello World");\n  }\n}\n',
-  php: '<?php\n\necho "Hello World\\n";\n',
-  html: '<!DOCTYPE html>\n<html>\n<head>\n  <meta charset="UTF-8">\n  <title>Live Preview</title>\n  <style>\n    body {\n      font-family: system-ui, sans-serif;\n      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n      min-height: 100vh;\n      display: flex;\n      align-items: center;\n      justify-content: center;\n      margin: 0;\n    }\n    .card {\n      background: white;\n      border-radius: 16px;\n      padding: 40px;\n      text-align: center;\n      box-shadow: 0 20px 60px rgba(0,0,0,0.3);\n    }\n    h1 { color: #764ba2; margin: 0 0 8px; }\n    p { color: #666; margin: 0; }\n  </style>\n</head>\n<body>\n  <div class="card">\n    <h1>Hello, SyncSpace! 🚀</h1>\n    <p>Start editing to see changes live.</p>\n  </div>\n\n  <script>\n    console.log("Preview loaded!");\n  </script>\n</body>\n</html>\n',
-  css: 'body {\n  margin: 0;\n  padding: 0;\n}\n',
-  json: '{\n  "key": "value"\n}\n',
-  markdown: '# Hello World\n',
-  rust: 'fn main() {\n    println!("Hello World");\n}\n',
-  go: 'package main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Println("Hello World")\n}\n',
+  python: 'print("Hello Python")\n',
+  java: 'public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello Java");\n    }\n}\n',
+  cpp: '#include <iostream>\n\nusing namespace std;\n\nint main() {\n    cout << "Hello C++" << endl;\n    return 0;\n}\n',
+  c: '#include <stdio.h>\n\nint main() {\n    printf("Hello C\\n");\n    return 0;\n}\n',
+  csharp: 'using System;\n\nclass Program\n{\n    static void Main()\n    {\n        Console.WriteLine("Hello C#");\n    }\n}\n',
+  php: '<?php\n\necho "Hello PHP";\n',
+  html: '<!DOCTYPE html>\n<html lang="en">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <title>Hello HTML</title>\n</head>\n<body>\n    <h1>Hello HTML</h1>\n</body>\n</html>\n',
+  json: '{\n    "message": "Hello JSON"\n}\n',
+  markdown: '# Hello Markdown\n',
+  rust: 'fn main() {\n    println!("Hello Rust");\n}\n',
+  go: 'package main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Println("Hello Go")\n}\n',
 };
 
 // Language display metadata for UI (visual only)
@@ -159,6 +157,7 @@ export default function EditorPanel() {
 
   // HTML Preview state
   const [previewHtml, setPreviewHtml] = useState('');
+  const [isHtmlPreviewOpen, setIsHtmlPreviewOpen] = useState(false);
   const [previewLastUser, setPreviewLastUser] = useState(null); // {name, timestamp}
   const isReceivingRemotePreview = useRef(false); // prevent echo loop
 
@@ -171,27 +170,16 @@ export default function EditorPanel() {
   const saveTimer = useRef(null);
   const typingTimeoutRef = useRef(null);
   const runCodeRef = useRef(null);
-  const previewDebounceRef = useRef(null);
   const [editorReady, setEditorReady] = useState(false);
 
-  // ── HTML Preview: auto-update on code change (500ms debounce) ──────────
+  // ── HTML Preview: close when switching away from HTML ───────────────────
   useEffect(() => {
     if (language !== 'html') {
-      setPreviewHtml(''); // clear when switching away from HTML
-      return;
+      setPreviewHtml('');
+      setPreviewLastUser(null);
+      setIsHtmlPreviewOpen(false);
     }
-    clearTimeout(previewDebounceRef.current);
-    previewDebounceRef.current = setTimeout(() => {
-      if (isReceivingRemotePreview.current) return; // don't echo back
-      const html = buildPreviewDocument(editorValue);
-      setPreviewHtml(html);
-      // Broadcast to all room participants
-      if (currentRoom?._id && isConnected && html) {
-        emitPreviewSync(currentRoom._id, html);
-      }
-    }, 500);
-    return () => clearTimeout(previewDebounceRef.current);
-  }, [editorValue, language, isConnected, currentRoom?._id]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [language]);
 
   // ── Receive remote preview sync from other participants ────────────────
   useEffect(() => {
@@ -200,6 +188,7 @@ export default function EditorPanel() {
       if (!html) return;
       isReceivingRemotePreview.current = true;
       setPreviewHtml(html);
+      setIsHtmlPreviewOpen(true);
       setPreviewLastUser({ name: userName, timestamp });
       // reset the flag after a tick so local changes still work
       setTimeout(() => { isReceivingRemotePreview.current = false; }, 100);
@@ -239,9 +228,28 @@ export default function EditorPanel() {
 
   // ── Run HTML manually (Run button) ─────────────────────────────────────
   const handleRunHtml = useCallback(() => {
+    if (isHtmlPreviewOpen) {
+      setIsHtmlPreviewOpen(false);
+      setPreviewHtml('');
+      setPreviewLastUser(null);
+      return;
+    }
+
     const code = editorRef.current?.getValue() || '';
     const html = buildPreviewDocument(code);
     setPreviewHtml(html);
+    setIsHtmlPreviewOpen(true);
+    if (currentRoom?._id && isConnected && html) {
+      emitPreviewSync(currentRoom._id, html);
+      toast.success('Preview synced to all participants!', { duration: 1500 });
+    }
+  }, [currentRoom?._id, isConnected, emitPreviewSync, isHtmlPreviewOpen]);
+
+  const handleRefreshHtml = useCallback(() => {
+    const code = editorRef.current?.getValue() || '';
+    const html = buildPreviewDocument(code);
+    setPreviewHtml(html);
+    setIsHtmlPreviewOpen(true);
     if (currentRoom?._id && isConnected && html) {
       emitPreviewSync(currentRoom._id, html);
       toast.success('Preview synced to all participants!', { duration: 1500 });
@@ -347,17 +355,22 @@ export default function EditorPanel() {
   // ── Language change ─────────────────────────────────────────────────────
   const handleLanguageChange = (e) => {
     const lang = e.target.value;
+    const tpl = TEMPLATES[lang] || '';
+
     setLanguage(lang);
     emitLanguageChange(currentRoom._id, lang);
 
     if (ydocRef.current) {
       const ytext = ydocRef.current.getText('codestate');
-      if (ytext.toString().trim() === '') {
-        const tpl = TEMPLATES[lang] || '';
+      ydocRef.current.transact(() => {
+        ytext.delete(0, ytext.length);
         if (tpl) {
-          ydocRef.current.transact(() => { ytext.insert(0, tpl); }, 'local');
+          ytext.applyDelta([{ insert: tpl }]);
         }
-      }
+      }, 'local');
+    } else if (editorRef.current) {
+      editorRef.current.setValue(tpl);
+      setEditorValue(tpl);
     }
   };
 
@@ -595,8 +608,12 @@ export default function EditorPanel() {
               disabled={isRunning && !isHtml}
               className="group flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-lg text-[11px] font-semibold shadow-sm shadow-emerald-950/40 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.97]"
             >
-              <TbPlayerPlay size={13} className="transition-transform group-hover:scale-110" />
-              <span>{isRunning && !isHtml ? 'Running...' : `Run ${langMeta.short}`}</span>
+              {isHtml && isHtmlPreviewOpen ? (
+                <TbX size={13} className="transition-transform group-hover:scale-110" />
+              ) : (
+                <TbPlayerPlay size={13} className="transition-transform group-hover:scale-110" />
+              )}
+              <span>{isHtml ? (isHtmlPreviewOpen ? 'Stop HTML' : 'Run HTML') : (isRunning ? 'Running...' : `Run ${langMeta.short}`)}</span>
             </button>
           )}
 
@@ -971,7 +988,7 @@ export default function EditorPanel() {
         )}
 
         {/* Right: Live HTML/CSS/JS Preview */}
-        {isHtml && (
+        {isHtml && isHtmlPreviewOpen && (
           <div className="w-full md:w-1/2 flex flex-col h-full bg-white relative">
 
             {/* Preview header (browser-style) */}
@@ -1010,7 +1027,7 @@ export default function EditorPanel() {
 
               <div className="flex items-center gap-0.5 flex-shrink-0">
                 <button
-                  onClick={handleRunHtml}
+                  onClick={handleRefreshHtml}
                   title="Refresh preview & sync to all"
                   className="p-1.5 text-surface-500 hover:text-surface-800 hover:bg-surface-200 rounded-md transition-colors"
                 >
@@ -1041,12 +1058,12 @@ export default function EditorPanel() {
                   <div className="w-16 h-16 mb-4 rounded-2xl bg-white border border-surface-200 shadow-sm flex items-center justify-center">
                     <TbPlayerPlay size={26} className="text-surface-300" />
                   </div>
-                  <p className="font-semibold text-surface-600 mb-1">Live Preview</p>
+                  <p className="font-semibold text-surface-600 mb-1">HTML Preview</p>
                   <p className="text-xs text-surface-500 max-w-[260px]">
-                    Start typing HTML to see the output here.
+                    Run HTML to see the output here.
                   </p>
                   <p className="text-xs text-surface-400 mt-1.5 max-w-[260px]">
-                    Preview syncs automatically to all participants.
+                    Preview updates when you run it again.
                   </p>
                 </div>
               )}
