@@ -50,6 +50,24 @@ const TEMPLATES = {
   go: 'package main\n\nimport "fmt"\n\nfunc main() {\n    fmt.Println("Hello World")\n}\n',
 };
 
+// Language display metadata for UI (visual only)
+const LANG_META = {
+  javascript: { label: 'JavaScript', short: 'JS', color: 'text-yellow-400', dot: 'bg-yellow-400', chip: 'border-yellow-500/30 bg-yellow-500/[0.06] text-yellow-300' },
+  typescript: { label: 'TypeScript', short: 'TS', color: 'text-sky-400', dot: 'bg-sky-400', chip: 'border-sky-500/30 bg-sky-500/[0.06] text-sky-300' },
+  python: { label: 'Python', short: 'PY', color: 'text-blue-400', dot: 'bg-blue-400', chip: 'border-blue-500/30 bg-blue-500/[0.06] text-blue-300' },
+  java: { label: 'Java', short: 'JAVA', color: 'text-orange-400', dot: 'bg-orange-400', chip: 'border-orange-500/30 bg-orange-500/[0.06] text-orange-300' },
+  cpp: { label: 'C++', short: 'C++', color: 'text-indigo-400', dot: 'bg-indigo-400', chip: 'border-indigo-500/30 bg-indigo-500/[0.06] text-indigo-300' },
+  c: { label: 'C', short: 'C', color: 'text-cyan-400', dot: 'bg-cyan-400', chip: 'border-cyan-500/30 bg-cyan-500/[0.06] text-cyan-300' },
+  csharp: { label: 'C#', short: 'C#', color: 'text-violet-400', dot: 'bg-violet-400', chip: 'border-violet-500/30 bg-violet-500/[0.06] text-violet-300' },
+  php: { label: 'PHP', short: 'PHP', color: 'text-purple-400', dot: 'bg-purple-400', chip: 'border-purple-500/30 bg-purple-500/[0.06] text-purple-300' },
+  html: { label: 'HTML', short: 'HTML', color: 'text-orange-400', dot: 'bg-orange-400', chip: 'border-orange-500/30 bg-orange-500/[0.06] text-orange-300' },
+  css: { label: 'CSS', short: 'CSS', color: 'text-blue-400', dot: 'bg-blue-400', chip: 'border-blue-500/30 bg-blue-500/[0.06] text-blue-300' },
+  json: { label: 'JSON', short: 'JSON', color: 'text-amber-400', dot: 'bg-amber-400', chip: 'border-amber-500/30 bg-amber-500/[0.06] text-amber-300' },
+  markdown: { label: 'Markdown', short: 'MD', color: 'text-slate-300', dot: 'bg-slate-300', chip: 'border-slate-500/30 bg-slate-500/[0.06] text-slate-300' },
+  rust: { label: 'Rust', short: 'RS', color: 'text-orange-500', dot: 'bg-orange-500', chip: 'border-orange-500/30 bg-orange-500/[0.06] text-orange-400' },
+  go: { label: 'Go', short: 'GO', color: 'text-cyan-400', dot: 'bg-cyan-400', chip: 'border-cyan-500/30 bg-cyan-500/[0.06] text-cyan-300' },
+};
+
 /**
  * Wraps raw code in a full HTML document with runtime error catching.
  * For proper HTML documents (<html> tag present), injects error handler into <head>.
@@ -523,80 +541,126 @@ export default function EditorPanel() {
   // ── Render ─────────────────────────────────────────────────────────────
   const isHtml = language === 'html';
   const isExecutable = ['javascript', 'typescript', 'python', 'java', 'c', 'cpp', 'csharp', 'php', 'go', 'rust'].includes(language);
+  const langMeta = LANG_META[language] || { label: language, short: language.toUpperCase(), color: 'text-surface-300', dot: 'bg-surface-400', chip: 'border-surface-700 bg-surface-800/60 text-surface-300' };
 
   return (
     <div className="flex flex-col h-full bg-surface-950 overflow-hidden">
 
       {/* ── Toolbar ───────────────────────────────────────────────── */}
-      <div className="flex-shrink-0 min-h-[3rem] h-auto py-2 bg-surface-900 border-b border-surface-800 px-3 flex flex-wrap items-center gap-2">
-        {/* Language */}
-        <select
-          value={language}
-          onChange={handleLanguageChange}
-          className="bg-surface-800 border border-surface-700 text-white rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary-500"
-        >
-          {LANGUAGES.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
-        </select>
+      <div className="flex-shrink-0 bg-surface-900/95 backdrop-blur border-b border-surface-800 px-3 py-2 flex flex-wrap items-center gap-2">
 
-        {/* Theme */}
-        <select
-          value={editorTheme}
-          onChange={(e) => setEditorTheme(e.target.value)}
-          className="bg-surface-800 border border-surface-700 text-white rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary-500"
-        >
-          <option value="vs-dark">Dark</option>
-          <option value="light">Light</option>
-        </select>
+        {/* Left cluster: config selects */}
+        <div className="flex items-center gap-1.5 rounded-lg border border-surface-800 bg-surface-950/60 p-1">
+          {/* Language chip indicator */}
+          <div className={`hidden sm:flex items-center gap-1.5 rounded-md border px-2 py-1 ${langMeta.chip}`}>
+            <span className={`h-1.5 w-1.5 rounded-full ${langMeta.dot}`} />
+            <span className="text-[10px] font-bold uppercase tracking-wider">{langMeta.short}</span>
+          </div>
 
-        {/* Font size */}
-        <select
-          value={fontSize}
-          onChange={(e) => setFontSize(Number(e.target.value))}
-          className="bg-surface-800 border border-surface-700 text-white rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-primary-500"
-        >
-          {[12, 13, 14, 15, 16, 18, 20, 22].map((s) => <option key={s} value={s}>{s}px</option>)}
-        </select>
-
-        {/* Run button */}
-        {(isExecutable || isHtml) && (
-          <button
-            onClick={isHtml ? handleRunHtml : handleRunCode}
-            disabled={isRunning && !isHtml}
-            className="flex items-center gap-1.5 px-3 py-1 bg-green-600 hover:bg-green-500 text-white rounded-lg text-xs font-semibold disabled:opacity-50 transition-colors"
+          <select
+            value={language}
+            onChange={handleLanguageChange}
+            className="bg-surface-900 border border-surface-800 text-surface-200 rounded-md px-2 py-1 text-[11px] font-medium focus:outline-none focus:ring-1 focus:ring-primary-500/60 hover:border-surface-700 transition-colors cursor-pointer"
           >
-            <TbPlayerPlay size={13} />
-            <span>{isRunning && !isHtml ? 'Running...' : 'Run'}</span>
+            {LANGUAGES.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
+          </select>
+
+          <div className="h-4 w-px bg-surface-800" />
+
+          <select
+            value={editorTheme}
+            onChange={(e) => setEditorTheme(e.target.value)}
+            className="bg-surface-900 border border-surface-800 text-surface-200 rounded-md px-2 py-1 text-[11px] font-medium focus:outline-none focus:ring-1 focus:ring-primary-500/60 hover:border-surface-700 transition-colors cursor-pointer"
+          >
+            <option value="vs-dark">Dark</option>
+            <option value="light">Light</option>
+          </select>
+
+          <div className="h-4 w-px bg-surface-800" />
+
+          <select
+            value={fontSize}
+            onChange={(e) => setFontSize(Number(e.target.value))}
+            className="bg-surface-900 border border-surface-800 text-surface-200 rounded-md px-2 py-1 text-[11px] font-medium focus:outline-none focus:ring-1 focus:ring-primary-500/60 hover:border-surface-700 transition-colors cursor-pointer"
+          >
+            {[12, 13, 14, 15, 16, 18, 20, 22].map((s) => <option key={s} value={s}>{s}px</option>)}
+          </select>
+        </div>
+
+        {/* Center cluster: primary actions */}
+        <div className="flex items-center gap-1.5">
+          {(isExecutable || isHtml) && (
+            <button
+              onClick={isHtml ? handleRunHtml : handleRunCode}
+              disabled={isRunning && !isHtml}
+              className="group flex items-center gap-1.5 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-lg text-[11px] font-semibold shadow-sm shadow-emerald-950/40 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.97]"
+            >
+              <TbPlayerPlay size={13} className="transition-transform group-hover:scale-110" />
+              <span>{isRunning && !isHtml ? 'Running...' : `Run ${langMeta.short}`}</span>
+            </button>
+          )}
+
+          <button
+            onClick={handleReviewCode}
+            disabled={isReviewing}
+            className="group flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-b from-violet-600 to-violet-700 hover:from-violet-500 hover:to-violet-600 active:from-violet-700 active:to-violet-800 text-white rounded-lg text-[11px] font-semibold shadow-sm shadow-violet-950/40 transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.97] ring-1 ring-violet-500/30"
+          >
+            <TbSparkles size={13} className="transition-transform group-hover:rotate-12 group-hover:scale-110" />
+            <span>{isReviewing ? 'Reviewing...' : 'Review Code'}</span>
           </button>
-        )}
+        </div>
 
-        {/* AI Review button */}
-        <button
-          onClick={handleReviewCode}
-          disabled={isReviewing}
-          className="flex items-center gap-1.5 px-3 py-1 bg-purple-600 hover:bg-purple-500 text-white rounded-lg text-xs font-semibold disabled:opacity-50 transition-colors"
-        >
-          <TbSparkles size={13} />
-          <span>{isReviewing ? 'Reviewing...' : 'Review Code'}</span>
-        </button>
-
-        <div className="ml-auto flex items-center gap-1 sm:gap-2 w-full sm:w-auto justify-end mt-2 sm:mt-0">
+        {/* Right cluster: status + utility actions */}
+        <div className="ml-auto flex items-center gap-1.5 w-full sm:w-auto justify-end flex-wrap">
           {/* Save indicator */}
-          <span className={`text-xs transition-colors mr-2 ${saveStatus === 'saving' ? 'text-yellow-400' : 'text-green-400'}`}>
-            {saveStatus === 'saving' ? '● Saving…' : '✓ Saved'}
-          </span>
+          <div className={`hidden sm:flex items-center gap-1.5 rounded-md border px-2 py-1 mr-1 transition-colors ${
+            saveStatus === 'saving'
+              ? 'border-amber-500/30 bg-amber-500/5 text-amber-400'
+              : 'border-emerald-500/30 bg-emerald-500/5 text-emerald-400'
+          }`}>
+            <span className={`h-1.5 w-1.5 rounded-full ${
+              saveStatus === 'saving' ? 'bg-amber-400 animate-pulse' : 'bg-emerald-400'
+            }`} />
+            <span className="text-[10px] font-semibold uppercase tracking-wider">
+              {saveStatus === 'saving' ? 'Saving' : 'Saved'}
+            </span>
+          </div>
 
-          <button onClick={handleFormat} title="Format Document" className="p-1.5 text-surface-400 hover:text-white hover:bg-surface-700 rounded transition-colors">
-            <TbWand size={15} />
-          </button>
-          <button onClick={handleCopy} title="Copy code" className="p-1.5 text-surface-400 hover:text-white hover:bg-surface-700 rounded transition-colors">
-            {copied ? <TbCheck size={15} className="text-green-400" /> : <TbCopy size={15} />}
-          </button>
-          <button onClick={handleDownload} title="Download file" className="p-1.5 text-surface-400 hover:text-white hover:bg-surface-700 rounded transition-colors">
-            <TbDownload size={15} />
-          </button>
-          <button onClick={() => setShowConsole(!showConsole)} title="Toggle Console Terminal" className={`p-1.5 rounded transition-colors ${showConsole ? 'text-green-400 bg-surface-700' : 'text-surface-400 hover:text-white hover:bg-surface-700'}`}>
-            <TbTerminal size={15} />
-          </button>
+          <div className="flex items-center gap-0.5 rounded-lg border border-surface-800 bg-surface-950/60 p-0.5">
+            <button
+              onClick={handleFormat}
+              title="Format Document"
+              className="p-1.5 text-surface-400 hover:text-white hover:bg-surface-800 rounded-md transition-colors"
+            >
+              <TbWand size={14} />
+            </button>
+            <button
+              onClick={handleCopy}
+              title="Copy code"
+              className="p-1.5 text-surface-400 hover:text-white hover:bg-surface-800 rounded-md transition-colors"
+            >
+              {copied ? <TbCheck size={14} className="text-emerald-400" /> : <TbCopy size={14} />}
+            </button>
+            <button
+              onClick={handleDownload}
+              title="Download file"
+              className="p-1.5 text-surface-400 hover:text-white hover:bg-surface-800 rounded-md transition-colors"
+            >
+              <TbDownload size={14} />
+            </button>
+            <div className="h-4 w-px bg-surface-800 mx-0.5" />
+            <button
+              onClick={() => setShowConsole(!showConsole)}
+              title="Toggle Console Terminal"
+              className={`p-1.5 rounded-md transition-colors ${
+                showConsole
+                  ? 'text-emerald-400 bg-emerald-500/10'
+                  : 'text-surface-400 hover:text-white hover:bg-surface-800'
+              }`}
+            >
+              <TbTerminal size={14} />
+            </button>
+          </div>
         </div>
       </div>
 
@@ -605,7 +669,7 @@ export default function EditorPanel() {
 
         {/* Left: Monaco Editor + Console */}
         <div className={`flex flex-col overflow-hidden ${isHtml ? 'w-full md:w-1/2 border-b md:border-b-0 md:border-r border-surface-800' : 'flex-1'}`}>
-          <div className="flex-1 min-h-0">
+          <div className="flex-1 min-h-0 relative">
             <MonacoEditor
               height="100%"
               language={language}
@@ -649,42 +713,127 @@ export default function EditorPanel() {
 
           {/* Console output (JS runner) */}
           {showConsole && (
-            <div className="h-44 border-t border-slate-800 bg-[#070b13] flex flex-col flex-shrink-0 text-white font-mono text-[11px]">
-              <div className="flex items-center justify-between px-4 py-2 bg-slate-900/60 border-b border-slate-800 flex-shrink-0">
-                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Console Terminal</span>
-                <div className="flex items-center gap-2">
-                  <button onClick={() => setOutput([])} className="px-2 py-0.5 bg-slate-800 hover:bg-slate-700 hover:text-white rounded text-[10px] text-slate-450 transition-colors">Clear</button>
-                  <button onClick={() => setShowConsole(false)} className="px-2 py-0.5 bg-red-950/20 hover:bg-red-900/30 hover:text-red-300 rounded text-[10px] text-red-400 transition-colors">Close</button>
+            <div className="h-44 border-t border-surface-800 bg-[#0a0e17] flex flex-col flex-shrink-0 text-white font-mono text-[11px]">
+
+              {/* Console header — language aware */}
+              <div className="flex items-center justify-between px-3 py-1.5 bg-surface-900/80 border-b border-surface-800 flex-shrink-0 backdrop-blur">
+                <div className="flex items-center gap-2 min-w-0">
+                  <div className="hidden sm:flex items-center gap-1 flex-shrink-0">
+                    <span className="h-2 w-2 rounded-full bg-surface-700" />
+                    <span className="h-2 w-2 rounded-full bg-surface-700" />
+                    <span className="h-2 w-2 rounded-full bg-surface-700" />
+                  </div>
+
+                  <div className="hidden sm:block h-3.5 w-px bg-surface-800 flex-shrink-0" />
+
+                  <div className="flex items-center gap-1.5 flex-shrink-0">
+                    <TbTerminal size={12} className={langMeta.color} />
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-surface-300">
+                      Terminal
+                    </span>
+                  </div>
+
+                  {/* Language indicator chip */}
+                  <div className={`flex items-center gap-1.5 rounded-full border px-2 py-0.5 flex-shrink-0 ${langMeta.chip}`}>
+                    <span className={`h-1.5 w-1.5 rounded-full ${langMeta.dot}`} />
+                    <span className="text-[9px] font-bold uppercase tracking-wider">
+                      {langMeta.label}
+                    </span>
+                  </div>
+
+                  {/* Running state chip */}
+                  {isRunning && (
+                    <div className="hidden sm:flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/[0.06] px-2 py-0.5 flex-shrink-0">
+                      <span className="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse" />
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-amber-300">
+                        Running
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Connection chip */}
+                  <div className="hidden md:flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/5 px-2 py-0.5 flex-shrink-0">
+                    <span className={`h-1.5 w-1.5 rounded-full ${isConnected ? 'bg-emerald-400' : 'bg-surface-600'}`} />
+                    <span className="text-[9px] font-semibold uppercase tracking-wider text-emerald-400/90">
+                      {isConnected ? 'Online' : 'Offline'}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-1 flex-shrink-0">
+                  <button
+                    onClick={() => setOutput([])}
+                    className="px-2 py-0.5 rounded-md text-[10px] font-medium text-surface-400 hover:text-white hover:bg-surface-800 transition-colors"
+                  >
+                    Clear
+                  </button>
+                  <button
+                    onClick={() => setShowConsole(false)}
+                    className="p-1 rounded-md text-surface-400 hover:text-red-300 hover:bg-red-500/10 transition-colors"
+                    title="Close console"
+                  >
+                    <TbX size={13} />
+                  </button>
                 </div>
               </div>
-              <div className="flex-1 p-3 overflow-y-auto space-y-1 select-text selection:bg-indigo-500/30">
+
+              {/* Console output */}
+              <div className="flex-1 p-3 overflow-y-auto space-y-0.5 select-text selection:bg-primary-500/30 scrollbar-thin scrollbar-thumb-surface-800 scrollbar-track-transparent">
                 {output.length === 0 ? (
-                  <div className="text-slate-500 italic">No output. Click "Run" or type 'run' below.</div>
+                  <div className="flex flex-col gap-1.5 text-surface-500">
+                    <div className="flex items-center gap-2 italic">
+                      <span className="h-1.5 w-1.5 rounded-full bg-surface-700" />
+                      <span>
+                        Ready — no output yet. Click{' '}
+                        <span className="not-italic font-semibold text-surface-400">Run</span> or type{' '}
+                        <span className="not-italic font-semibold text-surface-400">'run'</span> below.
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 pl-3.5 text-[10px]">
+                      <span className="text-surface-600">Active language:</span>
+                      <span className={`flex items-center gap-1 font-semibold ${langMeta.color}`}>
+                        <span className={`h-1 w-1 rounded-full ${langMeta.dot}`} />
+                        {langMeta.label}
+                      </span>
+                    </div>
+                  </div>
                 ) : (
                   output.map((line, idx) => {
-                    let cls = 'text-slate-300';
+                    let cls = 'text-white';
                     if (line.startsWith('[ERROR]')) cls = 'text-red-400';
-                    else if (line.startsWith('[WARN]')) cls = 'text-yellow-400';
-                    else if (line.startsWith('[INFO]')) cls = 'text-blue-400';
-                    else if (line.startsWith('=>')) cls = 'text-green-400 font-semibold';
-                    else if (line.startsWith('Runtime Error:')) cls = 'text-red-500 font-semibold border-l-2 border-red-500 pl-2 py-0.5 bg-red-950/10';
-                    else if (line.startsWith('guest@syncspace:~$')) cls = 'text-blue-400 font-bold';
+                    else if (line.startsWith('[WARN]')) cls = 'text-amber-400';
+                    else if (line.startsWith('[INFO]')) cls = 'text-sky-400';
+                    else if (line.startsWith('=>')) cls = 'text-emerald-400 font-semibold';
+                    else if (line.startsWith('Runtime Error:')) cls = 'text-red-400 font-semibold border-l-2 border-red-500 pl-2 py-0.5 bg-red-950/15 rounded-r';
+                    else if (line.startsWith('[COMPILE OUTPUT]')) cls = 'text-sky-400 font-semibold';
+                    else if (line.startsWith('guest@syncspace:~$')) cls = 'text-primary-400 font-semibold';
+                    else if (line.startsWith('Execution Failed:')) cls = 'text-red-400 font-semibold';
+                    else if (line.startsWith('[Execution time:')) cls = 'text-surface-500 italic';
                     return (
                       <div key={idx} className={`${cls} whitespace-pre-wrap leading-relaxed`}>{line}</div>
                     );
                   })
                 )}
               </div>
-              {/* Interactive terminal command input */}
-              <div className="flex items-center gap-1.5 px-3 py-1.5 border-t border-slate-900 bg-[#04060b] flex-shrink-0 text-slate-300">
-                <span className="text-green-400 font-semibold flex-shrink-0 select-none">guest@syncspace:~$</span>
+
+              {/* Interactive terminal command input — language aware prompt */}
+              <div className="flex items-center gap-2 px-3 py-2 border-t border-surface-800 bg-[#070b12] flex-shrink-0">
+                <div className={`flex items-center gap-1.5 flex-shrink-0 select-none`}>
+                  <span className="text-emerald-400 font-semibold text-[11px]">
+                    guest@syncspace<span className="text-surface-500">:</span><span className="text-sky-400">~</span><span className="text-surface-500">$</span>
+                  </span>
+                  <span className={`hidden sm:inline-flex items-center gap-1 rounded border px-1.5 py-px text-[9px] font-bold uppercase tracking-wider ${langMeta.chip}`}>
+                    <span className={`h-1 w-1 rounded-full ${langMeta.dot}`} />
+                    {langMeta.short}
+                  </span>
+                </div>
                 <input
                   type="text"
                   value={terminalInput}
                   onChange={(e) => setTerminalInput(e.target.value)}
                   onKeyDown={handleTerminalSubmit}
-                  className="flex-1 bg-transparent border-none outline-none text-white font-mono text-[11px] p-0 focus:ring-0"
-                  placeholder="Type 'help' or command..."
+                  className="flex-1 bg-transparent border-none outline-none text-white font-mono text-[11px] p-0 focus:ring-0 placeholder:text-surface-700"
+                  placeholder={`Type 'run' to execute ${langMeta.label}...`}
                 />
               </div>
             </div>
@@ -694,42 +843,128 @@ export default function EditorPanel() {
         {/* AI Code Review side panel */}
         {showReview && review && (
           <div className="w-full md:w-96 flex-shrink-0 h-full bg-surface-925 border-l border-surface-800 flex flex-col">
-            <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-surface-800">
-              <div className="flex items-center gap-2 text-sm font-semibold text-white">
-                <TbSparkles size={16} className="text-purple-400" /> AI Code Review
+
+            {/* Header */}
+            <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 border-b border-surface-800 bg-surface-900/60 backdrop-blur">
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-violet-600/30 to-violet-500/10 border border-violet-500/25">
+                  <TbSparkles size={15} className="text-violet-300" />
+                </div>
+                <div className="min-w-0">
+                  <h3 className="text-[13px] font-semibold tracking-tight text-white truncate">
+                    AI Code Review
+                  </h3>
+                  <p className="text-[10px] text-surface-500 truncate">
+                    Analysis for <span className={langMeta.color}>{langMeta.label}</span>
+                  </p>
+                </div>
               </div>
-              <button onClick={() => setShowReview(false)} className="p-1 text-surface-400 hover:text-white hover:bg-surface-800 rounded">
-                <TbX size={16} />
+              <button
+                onClick={() => setShowReview(false)}
+                className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg text-surface-400 hover:text-white hover:bg-surface-800 transition-colors"
+              >
+                <TbX size={15} />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
-              <p className="text-xs text-surface-300">{review.summary}</p>
-              <p className="text-[10px] text-surface-500">
-                Generated by {review.generatedBy === 'openai' ? 'OpenAI' : 'local heuristic check'}
-              </p>
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 scrollbar-thin scrollbar-thumb-surface-800 scrollbar-track-transparent">
 
+              {/* Summary card */}
+              <div className="rounded-xl border border-surface-800 bg-gradient-to-br from-surface-900 to-surface-900/40 p-3.5">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-violet-400">
+                    Summary
+                  </span>
+                  <span className={`inline-flex items-center gap-1 rounded-full border px-1.5 py-px text-[9px] font-bold uppercase tracking-wider ${langMeta.chip}`}>
+                    <span className={`h-1 w-1 rounded-full ${langMeta.dot}`} />
+                    {langMeta.short}
+                  </span>
+                </div>
+                <p className="text-xs leading-relaxed text-surface-300">{review.summary}</p>
+                <p className="mt-2 text-[10px] text-surface-500">
+                  Generated by{' '}
+                  <span className="font-semibold text-surface-400">
+                    {review.generatedBy === 'openai' ? 'OpenAI' : 'local heuristic check'}
+                  </span>
+                </p>
+              </div>
+
+              {/* Suggestions */}
               {(review.suggestions || []).length === 0 ? (
-                <p className="text-xs text-surface-500 italic mt-4">No suggestions, code looks clean.</p>
+                <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.04] p-4 text-center">
+                  <div className="mx-auto mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-emerald-500/10">
+                    <TbShieldCheck size={18} className="text-emerald-400" />
+                  </div>
+                  <p className="text-xs font-semibold text-emerald-400">Code looks clean</p>
+                  <p className="mt-1 text-[11px] text-surface-500">No suggestions or issues detected.</p>
+                </div>
               ) : (
-                (review.suggestions || []).map((s, idx) => {
-                  const icons = {
-                    bug: <TbBug size={14} className="text-red-400" />,
-                    security: <TbShieldCheck size={14} className="text-yellow-400" />,
-                    performance: <TbGauge size={14} className="text-blue-400" />,
-                    naming: <TbLetterCase size={14} className="text-purple-400" />,
-                    missing_comment: <TbMessage2 size={14} className="text-green-400" />,
-                  };
-                  return (
-                    <div key={idx} className="bg-surface-900 border border-surface-800 rounded-lg p-3">
-                      <div className="flex items-center gap-2 text-xs font-semibold text-white">
-                        {icons[s.category] || <TbSparkles size={14} className="text-surface-400" />}
-                        <span>Line {s.line ?? '—'}: {s.issue}</span>
+                <>
+                  <div className="flex items-center gap-2 px-1">
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.08em] text-surface-500">
+                      Suggestions
+                    </span>
+                    <span className="rounded-full bg-surface-800 px-1.5 py-0.5 text-[10px] font-semibold text-surface-400">
+                      {review.suggestions.length}
+                    </span>
+                  </div>
+
+                  {(review.suggestions || []).map((s, idx) => {
+                    const icons = {
+                      bug: <TbBug size={13} className="text-red-400" />,
+                      security: <TbShieldCheck size={13} className="text-amber-400" />,
+                      performance: <TbGauge size={13} className="text-sky-400" />,
+                      naming: <TbLetterCase size={13} className="text-violet-400" />,
+                      missing_comment: <TbMessage2 size={13} className="text-emerald-400" />,
+                    };
+                    const accent = {
+                      bug: 'border-l-red-500/60',
+                      security: 'border-l-amber-500/60',
+                      performance: 'border-l-sky-500/60',
+                      naming: 'border-l-violet-500/60',
+                      missing_comment: 'border-l-emerald-500/60',
+                    };
+                    const bg = {
+                      bug: 'bg-red-500/[0.04]',
+                      security: 'bg-amber-500/[0.04]',
+                      performance: 'bg-sky-500/[0.04]',
+                      naming: 'bg-violet-500/[0.04]',
+                      missing_comment: 'bg-emerald-500/[0.04]',
+                    };
+
+                    return (
+                      <div
+                        key={idx}
+                        className={`rounded-lg border border-surface-800 border-l-2 ${accent[s.category] || 'border-l-surface-700'} ${bg[s.category] || 'bg-surface-900'} p-3 transition-colors hover:border-surface-700`}
+                      >
+                        <div className="flex items-start gap-2">
+                          <div className="mt-0.5 flex-shrink-0">
+                            {icons[s.category] || <TbSparkles size={13} className="text-surface-400" />}
+                          </div>
+                          <div className="min-w-0 flex-1">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <span className="text-[10px] font-semibold uppercase tracking-wider text-surface-500">
+                                Line {s.line ?? '—'}
+                              </span>
+                              {s.category && (
+                                <span className="rounded-full bg-surface-800/80 px-1.5 py-px text-[9px] font-medium uppercase tracking-wide text-surface-400">
+                                  {s.category.replace('_', ' ')}
+                                </span>
+                              )}
+                            </div>
+                            <p className="mt-1 text-xs font-semibold leading-snug text-surface-100">
+                              {s.issue}
+                            </p>
+                            <p className="mt-1.5 text-[11px] leading-relaxed text-surface-400">
+                              {s.suggestion}
+                            </p>
+                          </div>
+                        </div>
                       </div>
-                      <p className="text-[11px] text-surface-400 mt-1">{s.suggestion}</p>
-                    </div>
-                  );
-                })
+                    );
+                  })}
+                </>
               )}
             </div>
           </div>
@@ -738,33 +973,53 @@ export default function EditorPanel() {
         {/* Right: Live HTML/CSS/JS Preview */}
         {isHtml && (
           <div className="w-full md:w-1/2 flex flex-col h-full bg-white relative">
-            {/* Preview header */}
-            <div className="flex-shrink-0 h-9 bg-surface-100 border-b border-surface-200 px-3 flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="flex gap-1">
+
+            {/* Preview header (browser-style) */}
+            <div className="flex-shrink-0 h-10 bg-surface-100 border-b border-surface-200 px-3 flex items-center justify-between">
+
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="flex gap-1.5">
                   <span className="w-2.5 h-2.5 rounded-full bg-red-400" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-400" />
-                  <span className="w-2.5 h-2.5 rounded-full bg-green-400" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-400" />
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
                 </div>
-                <span className="text-xs font-semibold text-surface-600 uppercase tracking-wider">Live Preview</span>
+
+                <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white border border-surface-200 shadow-sm min-w-0 max-w-[240px]">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 flex-shrink-0" />
+                  <span className="text-[10px] font-medium text-surface-600 truncate">
+                    localhost<span className="text-surface-400">/preview</span>
+                  </span>
+                </div>
+
+                <span className="hidden md:inline text-[10px] font-semibold uppercase tracking-[0.08em] text-surface-500">
+                  Live Preview
+                </span>
+
+                <span className="hidden lg:inline-flex items-center gap-1 rounded border border-orange-500/30 bg-orange-500/[0.06] px-1.5 py-px text-[9px] font-bold uppercase tracking-wider text-orange-500">
+                  <span className="h-1 w-1 rounded-full bg-orange-400" />
+                  HTML
+                </span>
+
                 {previewLastUser && (
-                  <span className="text-[10px] text-surface-400 ml-1">
-                    — synced by <span className="text-primary-500 font-medium">{previewLastUser.name}</span>
+                  <span className="hidden xl:inline-flex items-center gap-1 text-[10px] text-surface-400 truncate">
+                    ·
+                    <span className="text-primary-600 font-medium truncate">{previewLastUser.name}</span>
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-1">
+
+              <div className="flex items-center gap-0.5 flex-shrink-0">
                 <button
                   onClick={handleRunHtml}
                   title="Refresh preview & sync to all"
-                  className="p-1 text-surface-500 hover:text-surface-800 hover:bg-surface-200 rounded transition-colors"
+                  className="p-1.5 text-surface-500 hover:text-surface-800 hover:bg-surface-200 rounded-md transition-colors"
                 >
                   <TbRefresh size={14} />
                 </button>
                 <button
                   onClick={handleOpenPreviewTab}
                   title="Open in new tab"
-                  className="p-1 text-surface-500 hover:text-surface-800 hover:bg-surface-200 rounded transition-colors"
+                  className="p-1.5 text-surface-500 hover:text-surface-800 hover:bg-surface-200 rounded-md transition-colors"
                 >
                   <TbExternalLink size={14} />
                 </button>
@@ -783,12 +1038,16 @@ export default function EditorPanel() {
                 />
               ) : (
                 <div className="flex flex-col items-center justify-center h-full text-surface-400 text-sm p-6 text-center bg-surface-50">
-                  <div className="w-16 h-16 mb-4 rounded-2xl bg-surface-100 flex items-center justify-center">
-                    <TbPlayerPlay size={28} className="text-surface-300" />
+                  <div className="w-16 h-16 mb-4 rounded-2xl bg-white border border-surface-200 shadow-sm flex items-center justify-center">
+                    <TbPlayerPlay size={26} className="text-surface-300" />
                   </div>
-                  <p className="font-medium text-surface-500 mb-1">Live Preview</p>
-                  <p className="text-xs text-surface-400">Start typing HTML to see the output here.</p>
-                  <p className="text-xs text-surface-400 mt-1">Preview syncs automatically to all participants.</p>
+                  <p className="font-semibold text-surface-600 mb-1">Live Preview</p>
+                  <p className="text-xs text-surface-500 max-w-[260px]">
+                    Start typing HTML to see the output here.
+                  </p>
+                  <p className="text-xs text-surface-400 mt-1.5 max-w-[260px]">
+                    Preview syncs automatically to all participants.
+                  </p>
                 </div>
               )}
             </div>
